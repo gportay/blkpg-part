@@ -1,81 +1,222 @@
 /*
- *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
- *                    Version 2, December 2004
+ *  Copyright (C) 2018 Savoir-Faire Linux Inc.
  *
- * Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+ *  Authors:
+ *       Gaël PORTAY <gael.portay@savoirfairelinux.com>
  *
- * Everyone is permitted to copy and distribute verbatim or modified
- * copies of this license document, and changing it is allowed as long
- * as the name is changed.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
- *   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  0. You just DO WHAT THE FUCK YOU WANT TO.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <linux/blkpg.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdlib.h>
+/*
+ * Initial work of Boris Brezillon <boris.brezillon@free-electrons.com>
+ */
+
+#ifdef VERSION_STRING
+const char VERSION[] = VERSION_STRING;
+#else
+const char VERSION[] = __DATE__ " " __TIME__;
+#endif /* HAVE_CONFIG_H */
+
+#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <getopt.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stropts.h>
+#include <linux/blkpg.h>
 
-int main(int argc, char **argv)
+struct options_t {
+	char *volname;
+};
+
+static inline const char *applet(const char *arg0)
 {
-	struct blkpg_partition part = { };
-	struct blkpg_ioctl_arg req = {
-		.datalen = sizeof(part),
-		.data = &part,
+	char *s = strrchr(arg0, '/');
+	if (!s)
+		return arg0;
+
+	return s+1;
+}
+
+void usage(FILE * f, char * const arg0)
+{
+	fprintf(f, "Usage: %s [OPTIONS] add|resize DEVNAME PNO START LENGTH\n"
+		   "       %s [OPTIONS] delete     DEVNAME PNO\n"
+		   "\n"
+		   "DEVNAME: partition name, like sda5 or c0d1p2, to be used in kernel messages.\n"
+		   "PNO:     partition number.\n"
+		   "START:   starting offset in bytes.\n"
+		   "LENGTH:  length in bytes.\n"
+		   "\n"
+		   "Options:\n"
+		   " -l or --volume-name LABEL      Set volume label.\n"
+		   " -h or --help                   Display this message.\n"
+		   " -V or --version                Display the version.\n"
+		   "", applet(arg0), applet(arg0));
+}
+
+int parse_arguments(struct options_t *opts, int argc, char * const argv[])
+{
+	static const struct option long_options[] = {
+		{ "volume-name", required_argument, NULL, 'l' },
+		{ "version",     no_argument,       NULL, 'V' },
+		{ "help",        no_argument,       NULL, 'h' },
+		{ NULL,          no_argument,       NULL, 0   }
 	};
-	int fd, ret;
 
-	if (argc < 4)
-		goto err_invalid_arg;
+	for (;;) {
+		int index;
+		int c = getopt_long(argc, argv, "l:Vh", long_options, &index);
+		if (c == -1) {
+			break;
+		}
 
-	if (!strcmp("add", argv[1]))
-		req.op = BLKPG_ADD_PARTITION;
-	else if (!strcmp("remove", argv[1]))
-		req.op = BLKPG_DEL_PARTITION;
-	else
-		goto err_invalid_arg;
+		switch (c) {
+		case 'l':
+			opts->volname = optarg;
+			break;
 
+		case 'V':
+			printf("%s\n", VERSION);
+			exit(EXIT_SUCCESS);
+			break;
 
-	fd = open(argv[2], O_RDWR);
-	if (fd < 0) {
-		printf("failed to open block device %s (%s)\n",
-		       argv[2], strerror(errno));
-		return -1;
-	};
+		case 'h':
+			usage(stdout, argv[0]);
+			exit(EXIT_SUCCESS);
+			break;
 
-	errno = 0;
-	part.pno = strtoll(argv[3], NULL, 0);
+		case '?':
+			exit(EXIT_FAILURE);
+			break;
 
-	if (req.op == BLKPG_ADD_PARTITION) {
-		if (argc < 6)
-			goto err_invalid_arg;
-
-		part.start = strtoll(argv[4], NULL, 0);
-		part.length = strtoll(argv[5], NULL, 0);
+		default:
+			fprintf(stderr, "Error: Illegal option code 0x%x!\n", c);
+			exit(EXIT_FAILURE);
+		}
 	}
 
-	if (errno)
-		return -1;
+	return optind;
+}
+
+int main(int argc, char * const argv[])
+{
+	static struct options_t options;
+	static struct blkpg_partition data;
+	static struct blkpg_ioctl_arg req = {
+		.datalen = sizeof(data),
+		.data = &data,
+	};
+	int argi, fd, ret = EXIT_FAILURE;
+	char *e;
+	long l;
+
+	argi = parse_arguments(&options, argc, argv);
+	if (argi < 0) {
+		fprintf(stderr, "Error: Invalid argument!\n");
+		exit(EXIT_FAILURE);
+	} else if (argc - argi < 3) {
+		usage(stdout, argv[0]);
+		fprintf(stderr, "Error: Too few arguments!\n");
+		exit(EXIT_FAILURE);
+	} else if (argc - argi > 5) {
+		usage(stdout, argv[0]);
+		fprintf(stderr, "Error: Too many arguments!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (!strcmp("add", argv[argi])) {
+		req.op = BLKPG_ADD_PARTITION;
+	} else if (!strcmp("delete", argv[argi])) {
+		req.op = BLKPG_DEL_PARTITION;
+	} else if (!strcmp("resize", argv[argi])) {
+		req.op = BLKPG_RESIZE_PARTITION;
+	} else {
+		usage(stdout, argv[0]);
+		fprintf(stderr, "Error: %s: Invalid operation!\n", argv[argi]);
+		exit(EXIT_FAILURE);
+	}
+
+	if ((req.op == BLKPG_ADD_PARTITION) ||
+	    (req.op == BLKPG_RESIZE_PARTITION)) {
+		if (argc - argi < 5) {
+			usage(stdout, argv[0]);
+			fprintf(stderr, "Error: Too few arguments!\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	argi++;
+	strncpy(data.devname, argv[argi], BLKPG_DEVNAMELTH);
+
+	if (options.volname)
+		strncpy(data.volname, options.volname, BLKPG_VOLNAMELTH);
+
+	fd = open(data.devname, O_RDWR);
+	if (fd == -1) {
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
+
+	argi++;
+	l = strtol(argv[argi], &e, 0);
+	if (*e) {
+		fprintf(stderr, "Error: %s: Invalid argument!\n",
+			argv[argi]);
+		ret = EXIT_FAILURE;
+		goto exit;
+	}
+	data.pno = l;
+
+	if ((req.op == BLKPG_ADD_PARTITION) ||
+	    (req.op == BLKPG_RESIZE_PARTITION)) {
+		argi++;
+		l = strtol(argv[argi], &e, 0);
+		if (*e) {
+			fprintf(stderr, "Error: %s: Invalid argument!\n",
+				argv[argi]);
+			ret = EXIT_FAILURE;
+			goto exit;
+		}
+		data.start = l;
+
+		argi++;
+		l = strtol(argv[argi], &e, 0);
+		if (*e) {
+			fprintf(stderr, "Error: %s: Invalid argument!\n",
+				argv[argi]);
+			ret = EXIT_FAILURE;
+			goto exit;
+		}
+		data.length = l;
+	}
 
 	if (ioctl(fd, BLKPG, &req)) {
-		printf("failed (err %d => %s)\n", errno, strerror(errno));
-		return -1;
+		perror("ioctl");
+		ret = EXIT_FAILURE;
+		goto exit;
 	}
 
-	printf("partition %s\n",
-	       req.op == BLKPG_ADD_PARTITION ? "created" : "removed");
-	return 0;
+	ret = EXIT_SUCCESS;
 
-err_invalid_arg:
-	printf("usage:\n");
-	printf("\tblkpart add|remove <blk-dev> <partno> [<blk-dev-offset> <part-size>]\n");
-	return -1;
+exit:
+	if (fd != -1)
+		if (close(fd) == -1)
+			perror("close");
+
+	return ret;
 }
