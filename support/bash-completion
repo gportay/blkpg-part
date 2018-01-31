@@ -1,0 +1,56 @@
+#
+#  Copyright (C) 2018 Savoir-Faire Linux Inc.
+#
+#  Authors:
+#      Gaël PORTAY <gael.portay@savoirfairelinux.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+_blkpg_part()
+{
+	local cur prev words cword
+	_init_completion || return
+
+	case $prev in
+	-l|--volume-name)
+		_filedir
+		return
+		;;
+	esac
+
+	local short_opts="-l -h -V"
+	local long_opts="--volume-name --help --version"
+	if [[ "$cur" == -* ]]; then
+		COMPREPLY=( $( compgen -W "$short_opts $long_opts" -- "$cur" ) )
+		return
+	fi
+
+	local args
+	_count_args
+
+	if [[ "$args" -eq 1 ]]; then
+		COMPREPLY=( $(compgen -W "add delete resize" -- "$cur") )
+		return
+	fi
+
+	if [[ "$args" -eq 2 ]]; then
+		COMPREPLY=( $(compgen -W "$(find /dev -type b)" -- "$cur") )
+		return
+	fi
+
+	_filedir
+	return
+} &&
+complete -F _blkpg_part blkpg-part

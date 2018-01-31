@@ -33,9 +33,22 @@ install:
 	install -d $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 blkpg-part $(DESTDIR)$(PREFIX)/sbin/
 
+.PHONY: install-bash-completion
+install-bash-completion:
+	completionsdir=$$(pkg-config --variable=completionsdir bash-completion); \
+	if [ -n "$$completionsdir" ]; then \
+		install -d $(DESTDIR)$$completionsdir/; \
+		install -m 644 support/bash-completion \
+		        $(DESTDIR)$$completionsdir/blkpg-part; \
+	fi
+
 .PHONY: uninstall
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/sbin/blkpg-part
+	completionsdir=$$(pkg-config --variable=completionsdir bash-completion); \
+	if [ -n "$$completionsdir" ]; then \
+		rm -f $(DESTDIR)$$completionsdir/blkpg-part; \
+	fi
 
 .PHONY: user-install
 user-install:
