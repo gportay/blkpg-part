@@ -54,6 +54,10 @@ uninstall:
 user-install:
 	$(MAKE) install PREFIX=$$HOME/.local
 
+.PHONY: tests
+tests: blkpg-part libmock.so
+	@./tests.sh
+
 .PHONY: check
 check: override CPPCHECKFLAGS += --enable=all --error-exitcode=1 --std=posix
 check: override CPPCHECKFLAGS += -DVERSION_STRING='"$(VERSION)"'
@@ -62,7 +66,16 @@ check: blkpg-part.c
 
 .PHONY: clean
 clean:
-	rm -f blkpg-part
+	rm -f blkpg-part libmock.so
+
+LINK.so = $(LINK.o)
+lib%.so: override LDFLAGS += -shared
+
+lib%.so: %.o
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+lib%.so: %.c
+	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 COMPILE.i = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -E
 %.i: %.c
