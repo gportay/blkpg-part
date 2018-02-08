@@ -1,0 +1,1 @@
+../../../blkpg-part.mk
