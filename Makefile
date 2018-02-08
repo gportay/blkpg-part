@@ -28,10 +28,18 @@ override CFLAGS += -DVERSION_STRING='"$(VERSION)"'
 .PHONY: all
 all: blkpg-part
 
+.PHONY: doc
+doc: blkpg-part.1.gz
+
 .PHONY: install
 install:
 	install -d $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 blkpg-part $(DESTDIR)$(PREFIX)/sbin/
+
+.PHONY: install-doc
+install-doc:
+	install -d $(DESTDIR)$(PREFIX)/share/man/man1/
+	install -m 644 blkpg-part.1.gz $(DESTDIR)$(PREFIX)/share/man/man1/
 
 .PHONY: install-bash-completion
 install-bash-completion:
@@ -45,6 +53,7 @@ install-bash-completion:
 .PHONY: uninstall
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/sbin/blkpg-part
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man1/blkpg-part.1.gz
 	completionsdir=$$(pkg-config --variable=completionsdir bash-completion); \
 	if [ -n "$$completionsdir" ]; then \
 		rm -f $(DESTDIR)$$completionsdir/blkpg-part; \
@@ -80,4 +89,10 @@ lib%.so: %.c
 COMPILE.i = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -E
 %.i: %.c
 	$(COMPILE.i) $(OUTPUT_OPTION) $<
+
+%.1: %.1.adoc
+	asciidoctor -b manpage -o $@ $<
+
+%.gz: %
+	gzip -c $^ >$@
 
