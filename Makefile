@@ -1,7 +1,8 @@
 #
-# Copyright 2018,2021 Gaël PORTAY
-#                2021 Collabora Ltd.
-#                2018 Savoir-Faire Linux Inc.
+# Copyright 2018,2021,2023 Gaël PORTAY
+#                     2023 Rtone.
+#                     2021 Collabora Ltd.
+#                     2018 Savoir-Faire Linux Inc.
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
@@ -31,7 +32,9 @@ install-doc:
 
 .PHONY: install-bash-completion
 install-bash-completion:
-	completionsdir=$$(pkg-config --variable=completionsdir bash-completion); \
+	completionsdir=$$(pkg-config --define-variable=prefix=$(PREFIX) \
+	                             --variable=completionsdir \
+	                             bash-completion); \
 	if [ -n "$$completionsdir" ]; then \
 		install -d $(DESTDIR)$$completionsdir/; \
 		install -m 644 support/bash-completion \
@@ -42,7 +45,9 @@ install-bash-completion:
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/sbin/blkpg-part
 	rm -f $(DESTDIR)$(PREFIX)/share/man/man1/blkpg-part.1.gz
-	completionsdir=$$(pkg-config --variable=completionsdir bash-completion); \
+	completionsdir=$$(pkg-config --define-variable=prefix=$(PREFIX) \
+	                             --variable=completionsdir \
+	                             bash-completion); \
 	if [ -n "$$completionsdir" ]; then \
 		rm -f $(DESTDIR)$$completionsdir/blkpg-part; \
 	fi
