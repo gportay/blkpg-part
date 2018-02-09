@@ -36,7 +36,7 @@ const char VERSION[] = __DATE__ " " __TIME__;
 #include <getopt.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stropts.h>
+#include <sys/ioctl.h>
 #include <linux/blkpg.h>
 
 struct options_t {
