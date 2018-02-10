@@ -1,37 +1,83 @@
-## Welcome to GitHub Pages
+# blkpg-part
 
-You can use the [editor on GitHub](https://github.com/gazoo74/blkpg-part/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Partition table and disk geometry handling utility
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## DESCRIPTION
 
-### Markdown
+[blkpg-part(1)] creates, resizes and deletes _partitions_ on the fly without
+writing back the changes to the _partition table_.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Under the hood, [blkpg-part(1)] uses the three following *ioctl(3P)* from the
+_header_ [linux/blkpg.h]:
 
-```markdown
-Syntax highlighted code block
+* *BLKPG_ADD_PARTITION*
+* *BLKPG_DEL_PARTITION*
+* *BLKPG_RESIZE_PARTITION*
 
-# Header 1
-## Header 2
-### Header 3
+Thanks to [blkpg-part(1)], it is possible to export any _consecutive blocks_,
+that are not already part of a _partition_, as a _temporary partitioned_
+block device.
 
-- Bulleted
-- List
+A typically use case in _embedded systems_ is to export hidden _blobs_ that are
+stored in _raw_ in block devices (i.e. _blobs_ that are not stored into a
+_file-system_).
 
-1. Numbered
-2. List
+### CREATE PARTITION
 
-**Bold** and _Italic_ and `Code` text
+The creation of a _temporary partition_ takes:
 
-[Link](url) and ![Image](src)
-```
+1. the _block device_ (ex. _/dev/mmcblk0_)
+1. an arbitrary _partition number_ (ex. _100_)
+1. the _offset_ and the _length_ of the desired _partition_ in _bytes_[*].
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+Only _consecutive blocks_ that are _not_ a part of an existing _partition_ can
+create a _partition_.
 
-### Jekyll Themes
+### DELETE PARTITION
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/gazoo74/blkpg-part/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+The deletion of an _existing partition_ takes:
 
-### Support or Contact
+1. the _block device_ (ex. _/dev/mmcblk0_)
+1. the _partition number_ (ex. _1_ or _100_)
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Both _temporary partition_ and _partition_ from the _partition table_ can be
+deleted.
+
+## EMBEDDED BUILD SYSTEMS
+
+[blkpg-part(1)] is neither a part of [Buildroot] nor [OpenEmbedded]. However, a
+[Buildroot package] and a [Bitbake recipe] are available in the `support`
+directory, as well as structures for a [Buildroot br2-external] in `support/br2`
+and an [OpenEmbedded layer] in `support/oe/meta-blkpg-part`.
+
+## BUGS
+
+Report bugs at <https://github.com/gazoo74/blkpg-part/issues>
+
+## AUTHOR
+
+Written by Gaël PORTAY <gael.portay@savoirfairelinux.com>
+
+## COPYRIGHT
+
+Copyright (c) 2018 Gaël PORTAY
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 2.
+
+## SEE ALSO
+
+**ioctl(3P)**
+
+[blkpg-part(1)]: blkpg-part.1.adoc "Go to the Manual page"
+[linux/blkpg.h]: https://raw.githubusercontent.com/torvalds/linux/master/include/uapi/linux/blkpg.h "See linux/blkpg.h content"
+[Buildroot]: https://buildroot.org/ "Go to Buildroot website"
+[OpenEmbedded]: http://www.openembedded.org/ "Go to OpenEmbedded website"
+[Buildroot package]: support/blkpg-part.mk "See the Buildroot Package content"
+[Bitbake recipe]: support/blkpg-part.bb "See the Bitbake Recipe content"
+[Buildroot br2-external]: support/br2 "See the Buildroot br2-external structure"
+[OpenEmbedded layer]: support/oe "See the OpenEmbedded Layer structure"
+
+[*]: Both _offsets_ and _sizes_ are expressed in _bytes_ and should be a
+_multiple_ of _block size_ (_512 Bytes_).
