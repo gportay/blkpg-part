@@ -20,6 +20,9 @@ all: blkpg-part
 .PHONY: doc
 doc: blkpg-part.1.gz
 
+.PHONY: install-all
+install-all: install install-doc install-bash-completion
+
 .PHONY: install
 install:
 	install -d $(DESTDIR)$(PREFIX)/sbin/
@@ -51,6 +54,9 @@ uninstall:
 	if [ -n "$$completionsdir" ]; then \
 		rm -f $(DESTDIR)$$completionsdir/blkpg-part; \
 	fi
+
+.PHONY: user-install-all
+user-install-all: user-install user-install-doc user-install-bash-completion
 
 user-install user-install-doc user-install-bash-completion user-uninstall:
 user-%:
