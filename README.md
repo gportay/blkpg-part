@@ -2,6 +2,12 @@
 
 Partition table and disk geometry handling utility
 
+## TL;DR;
+
+[blkpg-part(1)] creates _temporary partitions_ that are not part of the _MBR_.
+It makes a _partition block device_ from any _consecutive blocks_ that are _not
+partitioned_.
+
 ## DESCRIPTION
 
 [blkpg-part(1)] creates, resizes and deletes _partitions_ on the fly without
@@ -36,6 +42,24 @@ create a _partition_.
 \[\*\]: Both _offsets_ and _sizes_ are expressed in _bytes_ and should be a
 _multiple_ of _block size_ (_512 Bytes_).
 
+#### CREATE EXAMPLE
+
+A _dummy_ example for _DOS partition scheme devices_ is to create a _partition_
+that exports the _MBR_:
+
+``` bash
+# blkpg-part add /dev/mmcblk0 100 0 512
+# hexdump -C /dev/mmcblk0p100
+00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+000001b0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 xx xx  |................|
+000001c0  xx xx xx xx xx xx xx xx  xx xx xx xx xx xx xx xx  |................|
+000001d0  xx xx xx xx xx xx xx xx  xx xx xx xx xx xx xx xx  |................|
+000001e0  xx xx xx xx xx xx xx xx  xx xx xx xx xx xx xx xx  |................|
+000001f0  xx xx xx xx xx xx xx xx  xx xx xx xx xx xx 55 aa  |..............U.|
+00000200
+```
+
 ### DELETE PARTITION
 
 The deletion of an _existing partition_ takes:
@@ -45,6 +69,97 @@ The deletion of an _existing partition_ takes:
 
 Both _temporary partition_ and _partition_ from the _partition table_ can be
 deleted.
+
+#### DELETE EXAMPLES
+
+A _dummy_ example for _DOS partition scheme devices_ is to delete the recently
+created _temporary partition_ that exports the _MBR_:
+
+``` bash
+# blkpg-part delete /dev/mmcblk0 100
+# hexdump -C /dev/mmcblk0p100
+hexdump: /dev/mmcblk0p100: No such file or directory
+hexdump: all input file arguments failed
+```
+
+Another example is to delete the existing first _partition_ from the _partition
+table_:
+
+``` bash
+# blkpg-part delete /dev/mmcblk0 1
+# hexdump -C /dev/mmcblk0p1
+hexdump: /dev/mmcblk0p1: No such file or directory
+hexdump: all input file arguments failed
+```
+
+## CONCRETE EXAMPLE
+
+Here is a simple _DOS partition scheme_ on an _SD-Card_ where there is space
+that is not _partitioned_ at the beginning of the _disk_; between the _MBR_ and
+the first partition (_Boot_).
+
+ Partition | Offset      | Length       | Device name
+ --------- | ----------- | ------------ | -------------
+ MBR       |     0       |     1 (512B) | -
+ (empty)   |     1       |  8191  (4MB) | -
+ Boot      |  8192  (4M) |  8192  (4MB) | /dev/mmcblkp1
+ RootFS    | 16384  (8M) | 16384  (8MB) | /dev/mmcblkp2
+ Data      | 32768 (16M) | -            | /dev/mmcblkp3
+
+This kind of scheme is common on _embedded devices_. This _empty_ space usually
+hides _blobs_ specific to the _SoC_ such as _bootloaders_ stored in _raw format_
+\[1\] into the _block device_.
+
+Those _blobs_ are generally _dd'ed_ at a very specific _offset_ which depends
+on the _ROMCode_\[2\] of the _SoC_ in use.
+
+The _ROMCode_ of _TI AM335x SoCs_ loads a _second stage bootloader_ that loads
+a _third stage bootloader_ that loads the _operating system_.
+
+This very first piece of software is called _MLO_ and must be stored at
+_offset_ _0_ on the _booting device_. It can also be duplicated at offsets
+_0x20000_, _0x40000_ and _0x60000_\[3\].
+
+_Note_: Because of this example is using a _DOS partition scheme_, the _MLO_
+cannot be placed at _offset 0_, otherwise it overrides the _DOS partition
+table_.
+
+``` bash
+# dd if=MLO of=/dev/mmcblk0 skip=$((0x20000))
+# dd if=MLO of=/dev/mmcblk0 skip=$((0x40000))
+# dd if=MLO of=/dev/mmcblk0 skip=$((0x60000))
+```
+
+It offers two advantages:
+
+1. It is not necessary to remember the precise _offset_: the new created _block
+   device_ knows where to start.
+1. If the _blob_ to _dd_ is _bigger_ than expected, the copy does not override
+   the following partition: the new created _block device_ knows where to stop.
+
+``` bash
+# dd if=MLO of=/dev/mmcblk0p101
+# dd if=MLO of=/dev/mmcblk0p102
+# dd if=MLO of=/dev/mmcblk0p103
+```
+
+\[1\]: The _raw_ format is to opposed to _file-system_ where the _blob_ is
+easily identifiable using a human readable identifier (_filename_).
+
+\[2\]: The _ROMCode_ is the _bootloader_ that is _hardcoded_ inside the _SoC_.
+Its goal is to load the _first_ piece of software that will be run by the
+_CPU_. It is usually referenced as the _first stage bootloader_.
+
+\[3\]: The _ROMCode_ of _TI AM335x SoCs_ allows the _MLO_ to be stored in a
+_FAT_ partition. But this case does not illustrate how _blkpg-part_ can be
+useful in such situation.
+
+## UDEV RULES
+
+[udev(7)] automates the creation of a _temporary partition_ via static rules by
+_RUN_-ing [blkpg-part(1)] matching the name of a non-deleted block device.
+
+An example of an [udev rule] is available in in the in the `support` directory.
 
 ## EMBEDDED BUILD SYSTEMS
 
@@ -90,3 +205,5 @@ later version.
 [Buildroot br2-external]: support/br2 "See the Buildroot br2-external structure"
 [OpenEmbedded layer]: support/oe "See the OpenEmbedded Layer structure"
 [ioctl(3P)]: https://linux.die.net/man/3/ioctl
+[udev(7)]: https://man7.org/linux/man-pages/man7/udev.7.html "Go to the Manual page"
+[udev rule]: support/90-blkpgp-part.rules#L27 "See an example of udev rule content"
