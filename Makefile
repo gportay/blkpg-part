@@ -64,7 +64,7 @@ user-%:
 
 .PHONY: tests
 tests: blkpg-part libmock.so
-	@./tests.sh
+	@./tests.bash
 
 .PHONY: check
 check: override CPPCHECKFLAGS += --enable=all --error-exitcode=1 --std=posix
