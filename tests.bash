@@ -57,7 +57,7 @@ result() {
 }
 
 PATH="$PWD:$PATH"
-trap result 0
+trap result 0 SIGINT
 
 blkpg-part() {
 	LD_PRELOAD="$PWD/libmock.so" ./blkpg-part "$@"
