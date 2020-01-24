@@ -30,6 +30,8 @@ ko() {
 }
 
 result() {
+	exitcode="$?"
+
 	if [[ $ok ]]; then
 		echo -e "\e[1m\e[32m$ok test(s) succeed!\e[0m"
 	fi
@@ -44,8 +46,14 @@ result() {
 
 	if [[ $ko ]]; then
 		echo -e "\e[1mError: \e[31m$ko test(s) failed!\e[0m" >&2
-		exit 1
 	fi
+
+	if [[ $exitcode -ne 0 ]] && [[ $ko -eq 0 ]]
+	then
+		echo -e "\e[1;31mExited!\e[0m" >&2
+	fi
+
+	exit "$exitcode"
 }
 
 PATH="$PWD:$PATH"
