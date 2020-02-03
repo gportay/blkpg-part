@@ -93,5 +93,5 @@ COMPILE.i = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -E
 	asciidoctor -b manpage -o $@ $<
 
 %.gz: %
-	gzip -c $^ >$@
+	gzip -c $< >$@
 
