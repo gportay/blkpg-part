@@ -25,13 +25,11 @@ install-all: install install-doc install-bash-completion
 
 .PHONY: install
 install:
-	install -d $(DESTDIR)$(PREFIX)/sbin/
-	install -m 755 blkpg-part $(DESTDIR)$(PREFIX)/sbin/
+	install -D -m 755 blkpg-part $(DESTDIR)$(PREFIX)/sbin/blkpg-part
 
 .PHONY: install-doc
 install-doc:
-	install -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	install -m 644 blkpg-part.1.gz $(DESTDIR)$(PREFIX)/share/man/man1/
+	install -D -m 644 blkpg-part.1.gz $(DESTDIR)$(PREFIX)/share/man/man1/blkpg-part.1.gz
 
 .PHONY: install-bash-completion
 install-bash-completion:
@@ -39,9 +37,7 @@ install-bash-completion:
 	                                                    --variable=completionsdir \
 	                                                    bash-completion)}; \
 	if [ -n "$$completionsdir" ]; then \
-		install -d $(DESTDIR)$$completionsdir/; \
-		install -m 644 support/bash-completion \
-		        $(DESTDIR)$$completionsdir/blkpg-part; \
+		install -D -m 644 support/bash-completion $(DESTDIR)$$completionsdir/blkpg-part; \
 	fi
 
 .PHONY: uninstall
