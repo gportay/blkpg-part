@@ -28,10 +28,13 @@ The creation of a _temporary partition_ takes:
 
 1. the _block device_ (ex. _/dev/mmcblk0_)
 1. an arbitrary _partition number_ (ex. _100_)
-1. the _offset_ and the _length_ of the desired _partition_ in _bytes_[*].
+1. the _offset_ and the _length_ of the desired _partition_ in _bytes_\[\*\].
 
 Only _consecutive blocks_ that are _not_ a part of an existing _partition_ can
 create a _partition_.
+
+\[\*\]: Both _offsets_ and _sizes_ are expressed in _bytes_ and should be a
+_multiple_ of _block size_ (_512 Bytes_).
 
 ### DELETE PARTITION
 
@@ -79,6 +82,3 @@ the Free Software Foundation, version 2.
 [Buildroot br2-external]: support/br2 "See the Buildroot br2-external structure"
 [OpenEmbedded layer]: support/oe "See the OpenEmbedded Layer structure"
 [ioctl(3P)]: https://linux.die.net/man/3/ioctl
-
-[*]: Both _offsets_ and _sizes_ are expressed in _bytes_ and should be a
-_multiple_ of _block size_ (_512 Bytes_).
