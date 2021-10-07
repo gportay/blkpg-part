@@ -68,7 +68,7 @@ the Free Software Foundation, version 2.
 
 ## SEE ALSO
 
-**ioctl(3P)**
+[ioctl(3P)]
 
 [blkpg-part(1)]: blkpg-part.1.adoc "Go to the Manual page"
 [linux/blkpg.h]: https://raw.githubusercontent.com/torvalds/linux/master/include/uapi/linux/blkpg.h "See linux/blkpg.h content"
@@ -78,6 +78,7 @@ the Free Software Foundation, version 2.
 [Bitbake recipe]: support/blkpg-part.bb "See the Bitbake Recipe content"
 [Buildroot br2-external]: support/br2 "See the Buildroot br2-external structure"
 [OpenEmbedded layer]: support/oe "See the OpenEmbedded Layer structure"
+[ioctl(3P)]: https://linux.die.net/man/3/ioctl
 
 [*]: Both _offsets_ and _sizes_ are expressed in _bytes_ and should be a
 _multiple_ of _block size_ (_512 Bytes_).
