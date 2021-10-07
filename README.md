@@ -52,11 +52,11 @@ and an [OpenEmbedded layer] in `support/oe/meta-blkpg-part`.
 
 ## BUGS
 
-Report bugs at <https://github.com/gazoo74/blkpg-part/issues>
+Report bugs at <https://github.com/gportay/blkpg-part/issues>
 
 ## AUTHOR
 
-Written by Gaël PORTAY <gael.portay@savoirfairelinux.com>
+Written by Gaël PORTAY <gael.portay@gmail.com>
 
 ## COPYRIGHT
 
