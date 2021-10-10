@@ -1,8 +1,9 @@
 /*
- *  Copyright (C) 2018 Savoir-Faire Linux Inc.
+ *  Copyright (C) 2021 Gaël PORTAY
+ *                2018 Savoir-Faire Linux Inc.
  *
  *  Authors:
- *       Gaël PORTAY <gael.portay@savoirfairelinux.com>
+ *       Gaël PORTAY <gael.portay@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +51,17 @@ static inline const char *applet(const char *arg0)
 		return arg0;
 
 	return s+1;
+}
+
+static inline char *strncpy_null(char *dest, char *src, size_t n)
+{
+	if (!dest || !src || !n) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	dest[n] = 0;
+	return strncpy(dest, src, n-1);
 }
 
 void usage(FILE * f, char * const arg0)
@@ -161,10 +173,10 @@ int main(int argc, char * const argv[])
 	}
 
 	argi++;
-	strncpy(data.devname, argv[argi], BLKPG_DEVNAMELTH);
+	strncpy_null(data.devname, argv[argi], BLKPG_DEVNAMELTH);
 
 	if (options.volname)
-		strncpy(data.volname, options.volname, BLKPG_VOLNAMELTH);
+		strncpy_null(data.volname, options.volname, BLKPG_VOLNAMELTH);
 
 	fd = open(data.devname, O_RDWR);
 	if (fd == -1) {
