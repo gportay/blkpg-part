@@ -1,6 +1,6 @@
 /*
- *  Copyright (C) 2021 Gaël PORTAY
- *                2018 Savoir-Faire Linux Inc.
+ * Copyright 2021 Gaël PORTAY
+ *           2018 Savoir-Faire Linux Inc.
  *
  * SPDX-License-Identifier: GPL-2.0
  */

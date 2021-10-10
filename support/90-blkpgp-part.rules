@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2018 Savoir-Faire Linux Inc.
+# Copyright 2018 Savoir-Faire Linux Inc.
 #
 # SPDX-License-Identifier: GPL-2.0
 #
