@@ -55,13 +55,16 @@ static inline const char *applet(const char *arg0)
 
 static inline char *strncpy_null(char *dest, char *src, size_t n)
 {
+	char *ret;
+
 	if (!dest || !src || !n) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	dest[n-1] = 0;
-	return strncpy(dest, src, n-1);
+	ret = strncpy(dest, src, n-1);
+	ret[n-1] = 0;
+	return ret;
 }
 
 void usage(FILE * f, char * const arg0)
