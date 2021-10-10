@@ -60,7 +60,7 @@ static inline char *strncpy_null(char *dest, char *src, size_t n)
 		return NULL;
 	}
 
-	dest[n] = 0;
+	dest[n-1] = 0;
 	return strncpy(dest, src, n-1);
 }
 
