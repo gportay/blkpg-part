@@ -1,7 +1,7 @@
 = blkpg-part(1)
 :doctype: manpage
 :author: Gaël PORTAY
-:email: gael.portay@savoirfairelinux.com
+:email: gael.portay@gmail.com
 :lang: en
 :man manual: BlockPG Partition Manual
 :man source: blkpg-part
