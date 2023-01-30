@@ -58,8 +58,8 @@ user-install user-install-doc user-install-bash-completion user-uninstall:
 user-%:
 	$(MAKE) $* PREFIX=$$HOME/.local BASHCOMPLETIONSDIR=$$HOME/.local/share/bash-completion/completions
 
-.PHONY: tests
-tests: blkpg-part libmock.so
+.PHONY: test tests
+test tests: blkpg-part libmock.so
 	@./tests.bash
 
 .PHONY: check
