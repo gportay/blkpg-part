@@ -1,0 +1,6 @@
+# Static information about the blkpg block devices.
+# See blkpgtab(5) for details.
+
+# <block device>    <number> <start>  <length>
+/dev/mmcblk0        100      0x4400   0x1000
+/dev/mmcblk0        101      0x8400   0x1000

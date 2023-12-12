@@ -1,8 +1,10 @@
 #!/bin/bash
 #
-# Copyright 2018,2021 Gaël PORTAY
-#                2021 Savoir-Faire Linux Inc.
-#                2018 Savoir-Faire Linux Inc.
+# Copyright 2018,2021,2023 Gaël PORTAY
+#                     2023 Rtone.
+#                     2021 Savoir-Faire Linux Inc.
+#                     2018 Savoir-Faire Linux Inc.
+#           2018 Savoir-Faire Linux Inc.
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
@@ -77,6 +79,10 @@ trap result 0 SIGINT
 
 blkpg-part() {
 	LD_PRELOAD="$PWD/libmock.so" ./blkpg-part "$@"
+}
+
+blkpgtab-generator() {
+	./blkpgtab-generator "$@"
 }
 
 run "Test add operation"
@@ -183,3 +189,57 @@ else
 fi
 echo
 
+run "blkpgtab-generator: test without argument"
+if ! blkpgtab-generator
+then
+	ok
+else
+	ko
+fi
+echo
+
+run "blkpgtab-generator: test with kernel-command-line parameter blkpg=no"
+if ROOT="$PWD/tests-blkpg-$$" \
+   SYSTEMD_PROC_CMDLINE="blkpg=no" \
+   blkpgtab-generator "/run/systemd/generator" "/run/systemd/generator.early" "/run/systemd/generator.late" && \
+   rm -Rf "$PWD/tests-blkpg-$$/"
+then
+	ok
+else
+	ko
+fi
+echo
+
+run "blkpgtab-generator: test with kernel-command-line parameter blkpg"
+if ROOT="$PWD/tests-blkpg-$$" \
+   SYSTEMD_PROC_CMDLINE="blkpg" \
+   SYSTEMD_BLKPGTAB="$PWD/support/blkpgtab" \
+   blkpgtab-generator "/run/systemd/generator" "/run/systemd/generator.early" "/run/systemd/generator.late" && \
+   test -e "$PWD/tests-blkpg-$$/run/systemd/generator/blkpg-dev-mmcblk0p100.service" && \
+   test -e "$PWD/tests-blkpg-$$/run/systemd/generator/blkpg-dev-mmcblk0p101.service" && \
+   test -L "$PWD/tests-blkpg-$$/run/systemd/generator/sysinit.target.wants/blkpg-dev-mmcblk0p100.service" && \
+   test -L "$PWD/tests-blkpg-$$/run/systemd/generator/sysinit.target.wants/blkpg-dev-mmcblk0p101.service" && \
+   rm -Rf "$PWD/tests-blkpg-$$/"
+then
+	ok
+else
+	ko
+fi
+echo
+
+run "blkpgtab-generator: test with kernel-command-line parameter blkpg=yes"
+if ROOT="$PWD/tests-blkpg-$$" \
+   SYSTEMD_PROC_CMDLINE="blkpg=yes" \
+   SYSTEMD_BLKPGTAB="$PWD/support/blkpgtab" \
+   blkpgtab-generator "/run/systemd/generator" "/run/systemd/generator.early" "/run/systemd/generator.late" && \
+   test -e "$PWD/tests-blkpg-$$/run/systemd/generator/blkpg-dev-mmcblk0p100.service" && \
+   test -e "$PWD/tests-blkpg-$$/run/systemd/generator/blkpg-dev-mmcblk0p101.service" && \
+   test -L "$PWD/tests-blkpg-$$/run/systemd/generator/sysinit.target.wants/blkpg-dev-mmcblk0p100.service" && \
+   test -L "$PWD/tests-blkpg-$$/run/systemd/generator/sysinit.target.wants/blkpg-dev-mmcblk0p101.service" && \
+   rm -Rf "$PWD/tests-blkpg-$$/"
+then
+	ok
+else
+	ko
+fi
+echo
