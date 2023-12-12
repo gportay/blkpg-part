@@ -2,7 +2,7 @@
 #
 # Copyright 2018 Savoir-Faire Linux Inc.
 #
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 #
 
 CPPCHECKFLAGS+=" -I/usr/include"
