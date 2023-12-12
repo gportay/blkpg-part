@@ -161,6 +161,16 @@ _RUN_-ing [blkpg-part(1)] matching the name of a non-deleted block device.
 
 An example of an [udev rule] is available in in the in the `support` directory.
 
+## SYSTEMD GENERATOR
+
+[systemd-generator(7)] is another alternative to automate the creation of
+_temporary partitions_.
+
+[blkpgtab-generator(8)] generates [systemd.service(5)]-s to create _temporary
+partitions_ at early boot via the static [blkpgtab(5)] file.
+
+An example of a [blkpgtab] is available in in the in the `support` directory.
+
 ## EMBEDDED BUILD SYSTEMS
 
 [blkpg-part(1)] is neither a part of [Buildroot] nor [OpenEmbedded]. However, a
@@ -182,10 +192,10 @@ Written by Gaël PORTAY <gael.portay@gmail.com>
 
 ## COPYRIGHT
 
-Copyright 2018,2021,2024 Gaël PORTAY
-                    2024 Rtone.
-                    2021 Collabora Ltd.
-                    2018 Savoir-Faire Linux Inc.
+Copyright 2018,2021,2023-2024 Gaël PORTAY
+                    2023-2024 Rtone.
+                         2021 Collabora Ltd.
+                         2018 Savoir-Faire Linux Inc.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -207,3 +217,9 @@ later version.
 [ioctl(3P)]: https://linux.die.net/man/3/ioctl
 [udev(7)]: https://man7.org/linux/man-pages/man7/udev.7.html "Go to the Manual page"
 [udev rule]: support/90-blkpg-part.rules#L27 "See an example of udev rule content"
+[systemd-generator(7)]: https://www.freedesktop.org/software/systemd/man/latest/systemd.generator.html "Go to the Manual page"
+[systemd.service(5)]: https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html "Go to the Manual page"
+[systemd blkpgtab]: support/90-blkpg-part.rules#L27 "See an example of systemd blkpgtab content"
+[blkpgtab-generator(8)]: blkpgtab-generator.8.adoc "Go to the Manual page"
+[blkpgtab(5)]: blkpgtab.5.adoc "Go to the Manual page"
+[blkpgtab]: support/blkpgtab "Static information about the blkpg block devices."

@@ -17,7 +17,7 @@ override CPPFLAGS += -DVERSION_STRING='"$(VERSION)"'
 all: blkpg-part
 
 .PHONY: doc
-doc: blkpg-part.1.gz
+doc: blkpg-part.1.gz blkpgtab.5.gz blkpgtab-generator.8.gz
 
 .PHONY: install-all
 install-all: install install-doc install-bash-completion
@@ -25,10 +25,18 @@ install-all: install install-doc install-bash-completion
 .PHONY: install
 install:
 	install -D -m 755 blkpg-part $(DESTDIR)$(PREFIX)/sbin/blkpg-part
+	generatordir=$${SYSTEMDSYSTEMGENERATORDIR:-$$(pkg-config --define-variable=prefix=$(PREFIX) \
+								 --variable=systemdsystemgeneratordir \
+								 systemd 2>/dev/null)}; \
+	if [ -n "$$generatordir" ]; then \
+		install -D -m 755 blkpgtab-generator $(DESTDIR)$$generatordir/blkpgtab-generator; \
+	fi
 
 .PHONY: install-doc
 install-doc:
 	install -D -m 644 blkpg-part.1.gz $(DESTDIR)$(PREFIX)/share/man/man1/blkpg-part.1.gz
+	install -D -m 644 blkpgtab.5.gz $(DESTDIR)$(PREFIX)/share/man/man5/blkpgtab.5.gz
+	install -D -m 644 blkpgtab-generator.8.gz $(DESTDIR)$(PREFIX)/share/man/man8/blkpgtab-generator.8.gz
 
 .PHONY: install-bash-completion
 install-bash-completion:
@@ -43,6 +51,14 @@ install-bash-completion:
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/sbin/blkpg-part
 	rm -f $(DESTDIR)$(PREFIX)/share/man/man1/blkpg-part.1.gz
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man5/blkpgtab.5.gz
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man8/blkpgtab-generator.8.gz
+	generatordir=$${SYSTEMDSYSTEMGENERATORDIR:-$$(pkg-config --define-variable=prefix=$(PREFIX) \
+								 --variable=systemdsystemgeneratordir \
+								 systemd 2>/dev/null)}; \
+	if [ -n "$$generatordir" ]; then \
+		rm -f $(DESTDIR)$$generatordir/raspberrypi-firmware-generator; \
+	fi
 	completionsdir=$${BASHCOMPLETIONSDIR:-$$(pkg-config --define-variable=prefix=$(PREFIX) \
 	                                                    --variable=completionsdir \
 	                                                    bash-completion)}; \
@@ -64,8 +80,9 @@ test tests: blkpg-part libmock.so
 .PHONY: check
 check: override CPPCHECKFLAGS += --enable=all --error-exitcode=1 --suppress=missingIncludeSystem --check-level=exhaustive --suppress=checkersReport
 check: override CPPCHECKFLAGS += -DVERSION_STRING='"$(VERSION)"'
-check: blkpg-part.c
-	cppcheck $(CPPCHECKFLAGS) $^
+check:
+	cppcheck $(CPPCHECKFLAGS) blkpg-part.c
+	shellcheck blkpgtab-generator
 
 .PHONY: clean
 clean:
@@ -85,6 +102,12 @@ COMPILE.i = $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -E
 	$(COMPILE.i) $(OUTPUT_OPTION) $<
 
 %.1: %.1.adoc
+	asciidoctor -b manpage -o $@ $<
+
+%.5: %.5.adoc
+	asciidoctor -b manpage -o $@ $<
+
+%.8: %.8.adoc
 	asciidoctor -b manpage -o $@ $<
 
 %.gz: %

@@ -18,4 +18,10 @@ do_compile() {
 do_install() {
 	install -d ${D}${sbindir}/
 	install -m 755 ${S}/blkpg-part ${D}${sbindir}/
+	install -d ${D}${systemd_unitdir}/system-generators/
+	install -m 755 ${S}/blkpgtab-generator ${D}${systemd_unitdir}/system-generators/
 }
+
+FILES:${PN} += "${systemd_unitdir}/system-generators/blkpgtab-generator"
+
+RDEPENDS:${PN} += "bash"
