@@ -1,0 +1,5 @@
+# stock blkpgtab - you probably want to override this with a machine specific one
+#/dev/mmcblk0         100                  0          512
+#/dev/mmcblk0         101                  67108864   67108864
+#/dev/mmcblk0         102                  134217728  67108864
+#/dev/mmcblk0         103                  201326592  67108864

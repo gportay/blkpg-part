@@ -1,0 +1,84 @@
+= blkpgtab(5)
+:doctype: manpage
+:author: Gaël PORTAY
+:email: gael.portay@gmail.com
+:lang: en
+:man manual: Configuration for blkpg-part devices
+:man source: blkpgtab 1
+
+== NAME
+
+blkpgtab - Configuration for blkpg block devices
+
+== SYNOPSIS
+
+/etc/blkpgtab
+
+== DESCRIPTION
+
+The /etc/blkpgtab file describes blkpg block devices that are set up during
+system boot.
+
+Empty lines and lines starting with the "#" character are ignored. Each of the
+remaining lines describes one verity protected block device. Fields are
+delimited by white space.
+
+Each line is in the form
+
+__block-device__ __partition-number__ __start__ __length__ __device-name__ __volume-name__
+
+The first four fields are mandatory, the remaining two are unused at present.
+
+The first field contains the path to the underlying block device, or a
+specification of the block device via __PARTUUID=__ followed by the __UUID__,
+or via __PARTLABEL=__ followed by the __label__.
+
+The second contains the partition number of the resulting blkpg volume; its
+block device is set up below /dev/.
+
+The third field is the starting offset in byte.
+
+The fourth field is the length in byte.
+
+The fifth field, if present, is the partition name, like sda5 or c0d1p2, to be
+used in kernel message; it is unused at present.
+
+The sixth field, if present, is the volume label; it is unused at present.
+
+At early boot and when the system manager configuration is reloaded, this file
+is translated into native systemd units by **blkpgtab-generator(8)**.
+
+== EXAMPLES
+
+**Example 1. /etc/blkpgtab example**
+
+Set up two blkpg block devices.
+
+	/dev/mmcblk0 100 0x4400 0x1000
+	/dev/mmcblk0 101 0x8400 0x1000
+
+== PATCHES
+
+Submit patches at *https://github.com/gportay/blkpg-part/pulls*
+
+== BUGS
+
+Report bugs at *https://github.com/gportay/blkpg-part/issues*
+
+== AUTHOR
+
+Written by Gaël PORTAY *gael.portay@gmail.com*
+
+== COPYRIGHT
+
+Copyright 2023-2024 Gaël PORTAY
+          2023-2024 Rtone.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 2.1 of the License, or (at your option) any
+later version.
+
+== SEE ALSO
+
+**systemd**(1), **blkpgtab-generator**(8), **blkpg-part**(1)
