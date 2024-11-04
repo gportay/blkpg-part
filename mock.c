@@ -1,7 +1,8 @@
 /*
- * Copyright 2018,2021 Gaël PORTAY
- *                2021 Collabora Ltd.
- *                2018 Savoir-Faire Linux Inc.
+ * Copyright 2018,2021,2024 Gaël PORTAY
+ *                     2024 Rtone.
+ *                     2021 Collabora Ltd.
+ *                     2018 Savoir-Faire Linux Inc.
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
@@ -14,15 +15,8 @@
 
 int open(const char *filename, int flags, ...)
 {
-	mode_t mode = 0;
-	va_list ap;
-	va_start(ap, flags);
-	mode = va_arg(ap, mode_t);
-	va_end(ap);
-
 	printf("%s_filename=\"%s\"\n", __FUNCTION__, filename);
 	printf("%s_flags=0x%x\n", __FUNCTION__, flags);
-	printf("%s_mode=0x%x\n", __FUNCTION__, mode);
 
 	return 127;
 }

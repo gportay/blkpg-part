@@ -56,7 +56,6 @@ run "Test add operation"
 if cat <<EOF | diff - <(blkpg-part add /dev/sda 100 0 512)
 open_filename="/dev/sda"
 open_flags=0x2
-open_mode=0x0
 ioctl_fd=127
 ioctl_req=4713
 ioctl_arg1_op=0x1
@@ -83,7 +82,6 @@ run "Test resize operation"
 if cat <<EOF | diff - <(blkpg-part resize /dev/sda 100 0 512)
 open_filename="/dev/sda"
 open_flags=0x2
-open_mode=0x0
 ioctl_fd=127
 ioctl_req=4713
 ioctl_arg1_op=0x3
@@ -110,7 +108,6 @@ run "Test delete operation"
 if cat <<EOF | diff - <(blkpg-part delete /dev/sda 100)
 open_filename="/dev/sda"
 open_flags=0x2
-open_mode=0x0
 ioctl_fd=127
 ioctl_req=4713
 ioctl_arg1_op=0x2
@@ -137,7 +134,6 @@ run "Test --volume-name option"
 if cat <<EOF | diff - <(blkpg-part --volume-name MBR add /dev/sda 100 0 512)
 open_filename="/dev/sda"
 open_flags=0x2
-open_mode=0x0
 ioctl_fd=127
 ioctl_req=4713
 ioctl_arg1_op=0x1
