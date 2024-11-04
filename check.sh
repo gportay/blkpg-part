@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# Copyright 2018 Savoir-Faire Linux Inc.
+# Copyright 2018,2021 Gaël PORTAY
+#                2021 Collabora Ltd.
+#                2018 Savoir-Faire Linux Inc.
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
