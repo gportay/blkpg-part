@@ -206,4 +206,4 @@ later version.
 [OpenEmbedded layer]: support/oe "See the OpenEmbedded Layer structure"
 [ioctl(3P)]: https://linux.die.net/man/3/ioctl
 [udev(7)]: https://man7.org/linux/man-pages/man7/udev.7.html "Go to the Manual page"
-[udev rule]: support/90-blkpgp-part.rules#L27 "See an example of udev rule content"
+[udev rule]: support/90-blkpg-part.rules#L27 "See an example of udev rule content"
