@@ -34,7 +34,7 @@ _blkpg_part()
 	fi
 
 	if [[ "$args" -eq 2 ]]; then
-		COMPREPLY=( $(compgen -W "$(find /dev -type b)" -- "$cur") )
+		COMPREPLY=( $(compgen -W "$(find /dev -type b 2>/dev/null)" -- "$cur") )
 		return
 	fi
 
