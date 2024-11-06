@@ -1,8 +1,8 @@
 #
-# Copyright 2018,2021,2023 Gaël PORTAY
-#                     2023 Rtone.
-#                     2021 Collabora Ltd.
-#                     2018 Savoir-Faire Linux Inc.
+# Copyright 2018,2021,2023-2024 Gaël PORTAY
+#                     2023-2024 Rtone.
+#                          2021 Collabora Ltd.
+#                          2018 Savoir-Faire Linux Inc.
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
@@ -12,7 +12,7 @@ CPPCHECKFLAGS ?=
 
 VERSION ?= $(shell git describe --always --all)
 
-override CFLAGS += -DVERSION_STRING='"$(VERSION)"'
+override CPPFLAGS += -DVERSION_STRING='"$(VERSION)"'
 
 .PHONY: all
 all: blkpg-part
