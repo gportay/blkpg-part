@@ -53,6 +53,10 @@ deleted.
 directory, as well as structures for a [Buildroot br2-external] in `support/br2`
 and an [OpenEmbedded layer] in `support/oe/meta-blkpg-part`.
 
+## PATCHES
+
+Sumbit patches at <https://github.com/gportay/blkpg-part/pulls>
+
 ## BUGS
 
 Report bugs at <https://github.com/gportay/blkpg-part/issues>
@@ -63,9 +67,10 @@ Written by Gaël PORTAY <gael.portay@gmail.com>
 
 ## COPYRIGHT
 
-Copyright 2018,2021 Gaël PORTAY
-               2021 Collabora Ltd.
-               2018 Savoir-Faire Linux Inc.
+Copyright 2018,2021,2024 Gaël PORTAY
+                    2024 Rtone.
+                    2021 Collabora Ltd.
+                    2018 Savoir-Faire Linux Inc.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free

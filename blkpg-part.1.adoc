@@ -45,6 +45,10 @@ _LENGTH_: length in bytes.
 
 Exits success if command-line is valid; exits failure otherwise.
 
+== PATCHES
+
+Submit patches at *https://github.com/gportay/blkpg-part/pulls*
+
 == BUGS
 
 Report bugs at *https://github.com/gportay/blkpg-part/issues*
