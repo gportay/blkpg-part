@@ -1,7 +1,8 @@
 /*
- * Copyright 2018,2021 Gaël PORTAY
- *                2021 Collabora Ltd.
- *                2018 Savoir-Faire Linux Inc.
+ * Copyright 2018,2021,2024 Gaël PORTAY
+ *                     2024 Rtone.
+ *                     2021 Collabora Ltd.
+ *                     2018 Savoir-Faire Linux Inc.
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
@@ -14,7 +15,7 @@
 const char VERSION[] = VERSION_STRING;
 #else
 const char VERSION[] = __DATE__ " " __TIME__;
-#endif /* HAVE_CONFIG_H */
+#endif /* VERSION_STRING */
 
 #include <unistd.h>
 #include <stdio.h>
