@@ -7,10 +7,9 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
 
+VERSION = 1
 PREFIX ?= /usr/local
 CPPCHECKFLAGS ?=
-
-VERSION ?= $(shell git describe --always --all)
 
 override CPPFLAGS += -DVERSION_STRING='"$(VERSION)"'
 

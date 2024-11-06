@@ -4,7 +4,7 @@
 :email: gael.portay@gmail.com
 :lang: en
 :man manual: BlockPG Partition Manual
-:man source: blkpg-part
+:man source: blkpg-part 1
 
 == NAME
 
