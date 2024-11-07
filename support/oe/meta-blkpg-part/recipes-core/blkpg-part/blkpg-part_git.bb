@@ -1,1 +1,1 @@
-../../../../blkpg-part.bb
+../../../../blkpg-part_git.bb
