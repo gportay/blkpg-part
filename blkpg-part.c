@@ -41,7 +41,7 @@ static inline const char *applet(const char *arg0)
 	return s+1;
 }
 
-static inline char *strncpy_null(char *dest, char *src, size_t n)
+static inline char *strncpy_null(char *dest, const char *src, size_t n)
 {
 	char *ret;
 
@@ -55,7 +55,7 @@ static inline char *strncpy_null(char *dest, char *src, size_t n)
 	return ret;
 }
 
-void usage(FILE * f, char * const arg0)
+void usage(FILE * f, const char * const arg0)
 {
 	fprintf(f, "Usage: %s [OPTIONS] add|resize DEVNAME PNO START LENGTH\n"
 		   "       %s [OPTIONS] delete     DEVNAME PNO\n"
