@@ -62,7 +62,7 @@ test tests: blkpg-part libmock.so
 	@./tests.bash
 
 .PHONY: check
-check: override CPPCHECKFLAGS += --enable=all --error-exitcode=1
+check: override CPPCHECKFLAGS += --enable=all --error-exitcode=1 --suppress=missingIncludeSystem
 check: override CPPCHECKFLAGS += -DVERSION_STRING='"$(VERSION)"'
 check: blkpg-part.c
 	cppcheck $(CPPCHECKFLAGS) $^
