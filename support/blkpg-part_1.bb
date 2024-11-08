@@ -12,5 +12,5 @@ do_compile() {
 
 do_install() {
 	install -d ${D}${sbindir}/
-	install -m 755 blkpg-part ${D}${sbindir}/
+	install -m 755 ${S}/blkpg-part ${D}${sbindir}/
 }
