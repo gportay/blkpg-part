@@ -11,10 +11,6 @@ SRC_URI = "git://git@github.com/gportay/blkpg-part.git;protocol=ssh;branch=maste
 
 S = "${WORKDIR}/git"
 
-do_compile() {
-	oe_runmake blkpg-part
-}
-
 do_install() {
 	install -d ${D}${sbindir}/
 	install -m 755 ${B}/blkpg-part ${D}${sbindir}/
