@@ -173,10 +173,8 @@ An example of a [blkpgtab] is available in in the in the `support` directory.
 
 ## EMBEDDED BUILD SYSTEMS
 
-[blkpg-part(1)] is neither a part of [Buildroot] nor [OpenEmbedded]. However, a
-[Buildroot package] and a [Bitbake recipe] are available in the `support`
-directory, as well as structures for a [Buildroot br2-external] in `support/br2`
-and an [OpenEmbedded layer] in `support/oe/meta-blkpg-part`.
+[blkpg-part(1)] is part of the [rtone-br2-external]'s [Buildroot] br2-external
+and the [meta-blkpg-part]'s [OpenEmbedded] layer.
 
 ## PATCHES
 
@@ -210,10 +208,8 @@ later version.
 [linux/blkpg.h]: https://raw.githubusercontent.com/torvalds/linux/master/include/uapi/linux/blkpg.h "See linux/blkpg.h content"
 [Buildroot]: https://buildroot.org/ "Go to Buildroot website"
 [OpenEmbedded]: http://www.openembedded.org/ "Go to OpenEmbedded website"
-[Buildroot package]: support/blkpg-part.mk "See the Buildroot Package content"
-[Bitbake recipe]: support/blkpg-part.bb "See the Bitbake Recipe content"
-[Buildroot br2-external]: support/br2 "See the Buildroot br2-external structure"
-[OpenEmbedded layer]: support/oe "See the OpenEmbedded Layer structure"
+[rtone-br2-external]: https://github.com/Rtone/rtone-br2-external/ "See the Buildroot br2-external structure"
+[meta-blkpg-part]: https://github.com/gportay/meta-downstream/tree/master/meta-blkpg-part "See the OpenEmbedded Layer structure"
 [ioctl(3P)]: https://linux.die.net/man/3/ioctl
 [udev(7)]: https://man7.org/linux/man-pages/man7/udev.7.html "Go to the Manual page"
 [udev rule]: support/90-blkpg-part.rules#L27 "See an example of udev rule content"
